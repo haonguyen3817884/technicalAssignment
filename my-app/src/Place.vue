@@ -1,22 +1,9 @@
 <template>
   <div>
-    place
     <div style="color: #111111; padding: 17px 17px">
       <div
         style="color: #111111; padding: 17px 17px; background-color: #348975"
       >
-        <div>
-          <div>place</div>
-          <div>place</div>
-        </div>
-        <div>
-          <div>place</div>
-          <div>place</div>
-        </div>
-        <div>
-          <div>place</div>
-          <div>place</div>
-        </div>
         <div
           v-for="placePlacePlaceValue in placeValues"
           :key="placePlacePlaceValue.count"
@@ -74,7 +61,7 @@ export default {
           if ("string" == typeof this.placeValue[placePlaces[1]]) {
             this.placeGetKey(placePlaces[1]);
           } else {
-            this.placeLoad("ERROR");
+            this.placeLoad("ERROR: Not a String");
           }
         }
       } else if ("SADD" == placePlaces[0]) {
@@ -144,7 +131,7 @@ export default {
           this.placeLoad("ERROR");
         } else {
           if (undefined === this.expiredValues[placePlaces[1]]) {
-            this.placeLoad("ERROR");
+            this.placeLoad("ERROR: Key is not expired");
           } else {
             this.placeTTLKey(placePlaces[1]);
           }
@@ -180,7 +167,7 @@ export default {
       }
 
       this.placeValue[key] = placePlaceValues;
-      this.placeLoad(placePlaceKeys);
+      this.placeLoad(placePlaceKeys + " " + "is/are not removed");
     },
     placeSMEMBERSKey: function (key) {
       let placePlaceValues = this.placeValue[key];
@@ -226,7 +213,7 @@ export default {
       this.placeLoad("OK");
     },
     placeEXPIREKey: function (key, seconds) {
-      var currentDate = new Date();
+      let currentDate = new Date();
       setTimeout(() => {
         this.placeDELKey(key);
       }, seconds * 1000);
@@ -246,10 +233,10 @@ export default {
       this.placeLoad("OK");
     },
     placeTTLKey: function (key) {
-      var currentDate = new Date();
+      let currentDate = new Date();
 
-      var placeSeconds = this.expiredValues[key] - currentDate.getSeconds();
-      this.placeLoad(placeSeconds);
+      let placeSeconds = this.expiredValues[key] - currentDate.getSeconds();
+      this.placeLoad(placeSeconds + " " + "seconds");
     },
     placeLoad: function (place) {
       let places = {};
