@@ -33,13 +33,6 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "vue/component-name-in-template-casing": [
-        "error",
-        "kebab-case",
-        {
-          "ignores": []
-        }
-      ],
       "vue/valid-v-model": 1,
       "vue/v-on-style": [
         "error",

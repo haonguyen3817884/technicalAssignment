@@ -48,99 +48,114 @@ export default {
     loadInputs: function (e) {
       e.preventDefault();
       var customerInputArr = this.customerInput.split(" ");
-      if ("SET" == customerInputArr[0]) {
-        if (3 != customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          this.placeSetKey(customerInputArr[1], customerInputArr[2]);
-        }
-      } else if ("GET" == customerInputArr[0]) {
-        if (2 != customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          if ("string" == typeof this.storedValue[customerInputArr[1]]) {
-            this.placeGetKey(customerInputArr[1]);
+
+      switch (customerInputArr[0]) {
+        case "SET":
+          if (3 != customerInputArr.length) {
+            this.loadTextValues("ERROR");
           } else {
-            this.loadTextValues("ERROR: Not a String");
+            this.placeSetKey(customerInputArr[1], customerInputArr[2]);
           }
-        }
-      } else if ("SADD" == customerInputArr[0]) {
-        if (3 > customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          let itemArr = [];
-          for (let i = 0; i < customerInputArr.length - 2; ++i) {
-            if (-1 == itemArr.indexOf(customerInputArr[i + 2])) {
+          break;
+        case "GET":
+          if (2 != customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            if ("string" == typeof this.storedValue[customerInputArr[1]]) {
+              this.placeGetKey(customerInputArr[1]);
+            } else {
+              this.loadTextValues("ERROR: Not a String");
+            }
+          }
+          break;
+        case "SADD":
+          if (3 > customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            let itemArr = [];
+            for (let i = 0; i < customerInputArr.length - 2; ++i) {
+              if (-1 == itemArr.indexOf(customerInputArr[i + 2])) {
+                itemArr.push(customerInputArr[i + 2]);
+              }
+            }
+            if (undefined !== this.storedValue[customerInputArr[1]]) {
+              if ("string" == typeof this.storedValue[customerInputArr[1]]) {
+                itemArr.push(this.storedValue[customerInputArr[1]]);
+              }
+            }
+            this.placeSADDKey(customerInputArr[1], itemArr);
+          }
+          break;
+        case "SREM":
+          if (3 > customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            let itemArr = [];
+
+            for (let i = 0; i < customerInputArr.length - 2; ++i) {
               itemArr.push(customerInputArr[i + 2]);
             }
+            this.placeSREMKey(customerInputArr[1], itemArr);
           }
-          if (undefined !== this.storedValue[customerInputArr[1]]) {
-            if ("string" == typeof this.storedValue[customerInputArr[1]]) {
-              itemArr.push(this.storedValue[customerInputArr[1]]);
+          break;
+        case "SMEMBERS":
+          if (2 != customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            this.placeSMEMBERSKey(customerInputArr[1]);
+          }
+          break;
+        case "SINTER":
+          if (3 > customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            let itemArr = [];
+            for (let i = 0; i < customerInputArr.length - 1; ++i) {
+              itemArr.push(customerInputArr[i + 1]);
+            }
+            this.placeSINTERKey(itemArr);
+          }
+          break;
+        case "KEYS":
+          this.placeKEYS();
+          break;
+        case "DEL":
+          if (2 != customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            this.placeDELKey(customerInputArr[1]);
+          }
+          break;
+        case "EXPIRE":
+          if (3 != customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            this.placeEXPIREKey(
+              customerInputArr[1],
+              parseInt(customerInputArr[2])
+            );
+          }
+          break;
+        case "SAVE":
+          this.placeSAVEKey();
+          break;
+        case "RESTORE":
+          this.placeRESTOREKey();
+          break;
+        case "TTL":
+          if (2 != customerInputArr.length) {
+            this.loadTextValues("ERROR");
+          } else {
+            if (undefined === this.expiredValue[customerInputArr[1]]) {
+              this.placeLoad("ERROR: Key is not expired");
+            } else {
+              this.placeTTLKey(customerInputArr[1]);
             }
           }
-          this.placeSADDKey(customerInputArr[1], itemArr);
-        }
-      } else if ("SREM" == customerInputArr[0]) {
-        if (3 > customerInputArr.length) {
+          break;
+        default:
           this.loadTextValues("ERROR");
-        } else {
-          let itemArr = [];
-
-          for (let i = 0; i < customerInputArr.length - 2; ++i) {
-            itemArr.push(customerInputArr[i + 2]);
-          }
-          this.placeSREMKey(customerInputArr[1], itemArr);
-        }
-      } else if ("SMEMBERS" == customerInputArr[0]) {
-        if (2 != customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          this.placeSMEMBERSKey(customerInputArr[1]);
-        }
-      } else if ("SINTER" == customerInputArr[0]) {
-        if (3 > customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          let itemArr = [];
-          for (let i = 0; i < customerInputArr.length - 1; ++i) {
-            itemArr.push(customerInputArr[i + 1]);
-          }
-          this.placeSINTERKey(itemArr);
-        }
-      } else if ("KEYS" == customerInputArr[0]) {
-        this.placeKEYS();
-      } else if ("DEL" == customerInputArr[0]) {
-        if (2 != customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          this.placeDELKey(customerInputArr[1]);
-        }
-      } else if ("EXPIRE" == customerInputArr[0]) {
-        if (3 != customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          this.placeEXPIREKey(
-            customerInputArr[1],
-            parseInt(customerInputArr[2])
-          );
-        }
-      } else if ("SAVE" == customerInputArr[0]) {
-        this.placeSAVEKey();
-      } else if ("RESTORE" == customerInputArr[0]) {
-        this.placeRESTOREKey();
-      } else if ("TTL" == customerInputArr[0]) {
-        if (2 != customerInputArr.length) {
-          this.loadTextValues("ERROR");
-        } else {
-          if (undefined === this.expiredValue[customerInputArr[1]]) {
-            this.placeLoad("ERROR: Key is not expired");
-          } else {
-            this.placeTTLKey(customerInputArr[1]);
-          }
-        }
-      } else {
-        this.loadTextValues("ERROR");
+          break;
       }
 
       this.customerInput = "";
