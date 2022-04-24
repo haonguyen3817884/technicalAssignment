@@ -5,17 +5,17 @@
         style="color: #111111; padding: 17px 17px; background-color: #348975"
       >
         <div
-          v-for="placePlacePlaceValue in placeValues"
-          :key="placePlacePlaceValue.count"
+          v-for="textValue in textValues"
+          :key="textValue.count"
           style="margin: 17px 0px"
         >
-          <div>{{ placePlacePlaceValue.first }}</div>
-          <div>{{ placePlacePlaceValue.last }}</div>
+          <div>{{ textValue.first }}</div>
+          <div>{{ textValue.last }}</div>
         </div>
       </div>
 
       <div>
-        <form style="display: flex" v-on:submit="placeIn">
+        <form style="display: flex" v-on:submit="loadInputs">
           <input
             type="text"
             style="
@@ -24,7 +24,7 @@
               background-color: #111111;
               color: #ffffff;
             "
-            v-model="value"
+            v-model="customerInput"
           />
         </form>
       </div>
@@ -38,213 +38,216 @@ export default {
 
   data: function () {
     return {
-      value: "",
-      placeValues: [],
-      placeValue: {},
-      expiredValues: {},
+      customerInput: "",
+      textValues: [],
+      storedValue: {},
+      expiredValue: {},
     };
   },
   methods: {
-    placeIn: function (e) {
+    loadInputs: function (e) {
       e.preventDefault();
-      var placePlaces = this.value.split(" ");
-      if ("SET" == placePlaces[0]) {
-        if (3 != placePlaces.length) {
-          this.placeLoad("ERROR");
+      var customerInputArr = this.customerInput.split(" ");
+      if ("SET" == customerInputArr[0]) {
+        if (3 != customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          this.placeSetKey(placePlaces[1], placePlaces[2]);
+          this.placeSetKey(customerInputArr[1], customerInputArr[2]);
         }
-      } else if ("GET" == placePlaces[0]) {
-        if (2 != placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("GET" == customerInputArr[0]) {
+        if (2 != customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          if ("string" == typeof this.placeValue[placePlaces[1]]) {
-            this.placeGetKey(placePlaces[1]);
+          if ("string" == typeof this.storedValue[customerInputArr[1]]) {
+            this.placeGetKey(customerInputArr[1]);
           } else {
-            this.placeLoad("ERROR: Not a String");
+            this.loadTextValues("ERROR: Not a String");
           }
         }
-      } else if ("SADD" == placePlaces[0]) {
-        if (3 > placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("SADD" == customerInputArr[0]) {
+        if (3 > customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          let placePlaceArr = [];
-          for (let i = 0; i < placePlaces.length - 2; ++i) {
-            if (-1 == placePlaceArr.indexOf(placePlaces[i + 2])) {
-              placePlaceArr.push(placePlaces[i + 2]);
+          let itemArr = [];
+          for (let i = 0; i < customerInputArr.length - 2; ++i) {
+            if (-1 == itemArr.indexOf(customerInputArr[i + 2])) {
+              itemArr.push(customerInputArr[i + 2]);
             }
           }
-          if (undefined !== this.placeValue[placePlaces[1]]) {
-            if ("string" == typeof this.placeValue[placePlaces[1]]) {
-              placePlaceArr.push(this.placeValue[placePlaces[1]]);
+          if (undefined !== this.storedValue[customerInputArr[1]]) {
+            if ("string" == typeof this.storedValue[customerInputArr[1]]) {
+              itemArr.push(this.storedValue[customerInputArr[1]]);
             }
           }
-          this.placeSADDKey(placePlaces[1], placePlaceArr);
+          this.placeSADDKey(customerInputArr[1], itemArr);
         }
-      } else if ("SREM" == placePlaces[0]) {
-        if (3 > placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("SREM" == customerInputArr[0]) {
+        if (3 > customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          let placePlaceArr = [];
+          let itemArr = [];
 
-          for (let i = 0; i < placePlaces.length - 2; ++i) {
-            placePlaceArr.push(placePlaces[i + 2]);
+          for (let i = 0; i < customerInputArr.length - 2; ++i) {
+            itemArr.push(customerInputArr[i + 2]);
           }
-          this.placeSREMKey(placePlaces[1], placePlaceArr);
+          this.placeSREMKey(customerInputArr[1], itemArr);
         }
-      } else if ("SMEMBERS" == placePlaces[0]) {
-        if (2 != placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("SMEMBERS" == customerInputArr[0]) {
+        if (2 != customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          this.placeSMEMBERSKey(placePlaces[1]);
+          this.placeSMEMBERSKey(customerInputArr[1]);
         }
-      } else if ("SINTER" == placePlaces[0]) {
-        if (3 > placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("SINTER" == customerInputArr[0]) {
+        if (3 > customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          let placePlaceArr = [];
-          for (let i = 0; i < placePlaces.length - 1; ++i) {
-            placePlaceArr.push(placePlaces[i + 1]);
+          let itemArr = [];
+          for (let i = 0; i < customerInputArr.length - 1; ++i) {
+            itemArr.push(customerInputArr[i + 1]);
           }
-          this.placeSINTERKey(placePlaceArr);
+          this.placeSINTERKey(itemArr);
         }
-      } else if ("KEYS" == placePlaces[0]) {
+      } else if ("KEYS" == customerInputArr[0]) {
         this.placeKEYS();
-      } else if ("DEL" == placePlaces[0]) {
-        if (2 != placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("DEL" == customerInputArr[0]) {
+        if (2 != customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          this.placeDELKey(placePlaces[1]);
+          this.placeDELKey(customerInputArr[1]);
         }
-      } else if ("EXPIRE" == placePlaces[0]) {
-        if (3 != placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("EXPIRE" == customerInputArr[0]) {
+        if (3 != customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          this.placeEXPIREKey(placePlaces[1], parseInt(placePlaces[2]));
+          this.placeEXPIREKey(
+            customerInputArr[1],
+            parseInt(customerInputArr[2])
+          );
         }
-      } else if ("SAVE" == placePlaces[0]) {
+      } else if ("SAVE" == customerInputArr[0]) {
         this.placeSAVEKey();
-      } else if ("RESTORE" == placePlaces[0]) {
+      } else if ("RESTORE" == customerInputArr[0]) {
         this.placeRESTOREKey();
-      } else if ("TTL" == placePlaces[0]) {
-        if (2 != placePlaces.length) {
-          this.placeLoad("ERROR");
+      } else if ("TTL" == customerInputArr[0]) {
+        if (2 != customerInputArr.length) {
+          this.loadTextValues("ERROR");
         } else {
-          if (undefined === this.expiredValues[placePlaces[1]]) {
+          if (undefined === this.expiredValue[customerInputArr[1]]) {
             this.placeLoad("ERROR: Key is not expired");
           } else {
-            this.placeTTLKey(placePlaces[1]);
+            this.placeTTLKey(customerInputArr[1]);
           }
         }
       } else {
-        this.placeLoad("ERROR");
+        this.loadTextValues("ERROR");
       }
 
-      this.value = "";
+      this.customerInput = "";
     },
-    placeSetKey: function (key, place) {
-      this.placeValue[key] = place;
-      this.placeLoad("OK");
+    placeSetKey: function (key, itemValue) {
+      this.storedValue[key] = itemValue;
+      this.loadTextValues("OK");
     },
     placeGetKey: function (key) {
-      let placePlaceValue = this.placeValue[key];
-      this.placeLoad(placePlaceValue);
+      let item = this.storedValue[key];
+      this.loadTextValues(item);
     },
-    placeSADDKey: function (key, place) {
-      this.placeValue[key] = place;
-      this.placeLoad("OK");
+    placeSADDKey: function (key, itemValues) {
+      this.storedValue[key] = itemValues;
+      this.loadTextValues("OK");
     },
-    placeSREMKey: function (key, place) {
-      let placePlaceValues = [];
-      let placePlaceKeys = "";
-      placePlaceValues = placePlaceValues.concat(this.placeValue[key]);
-      for (let i = 0; i < place.length; ++i) {
-        if (-1 == placePlaceValues.indexOf(place[i])) {
-          placePlaceKeys = placePlaceKeys + " " + place[i];
+    placeSREMKey: function (key, itemValues) {
+      let itemArr = [];
+      let leftItems = "";
+      itemArr = itemArr.concat(this.storedValue[key]);
+      for (let i = 0; i < itemValues.length; ++i) {
+        if (-1 == itemArr.indexOf(itemValues[i])) {
+          leftItems = leftItems + " " + itemValues[i];
         } else {
-          placePlaceValues.splice(placePlaceValues.indexOf(place[i]), 1);
+          itemArr.splice(itemArr.indexOf(itemValues[i]), 1);
         }
       }
 
-      this.placeValue[key] = placePlaceValues;
-      this.placeLoad(placePlaceKeys + " " + "is/are not removed");
+      this.storedValue[key] = itemArr;
+      this.loadTextValues(leftItems + " " + "is/are not removed");
     },
     placeSMEMBERSKey: function (key) {
-      let placePlaceValues = this.placeValue[key];
-      this.placeLoad(placePlaceValues.join(" "));
+      let itemArr = this.storedValue[key];
+      this.loadTextValues(itemArr.join(" "));
     },
     placeSINTERKey: function (keys) {
-      let placePlaceValues = this.placeValue[keys[0]];
-      let placeArr = [];
+      let itemArr = this.storedValue[keys[0]];
+      let foundItemArr = [];
       let count = 0;
-      for (let i = 0; i < placePlaceValues.length; ++i) {
+      for (let i = 0; i < itemArr.length; ++i) {
         for (let index = 0; index < keys.length - 1; ++index) {
-          let placeArray = [];
-          placeArray = this.placeValue[keys[index + 1]];
+          let lastItemArr = [];
+          lastItemArr = this.storedValue[keys[index + 1]];
           for (
-            let placeIndex = 0;
-            placeIndex < placeArray.length;
-            ++placeIndex
+            let arrayIndex = 0;
+            arrayIndex < lastItemArr.length;
+            ++arrayIndex
           ) {
-            if (placePlaceValues[i] == placeArray[placeIndex]) {
+            if (itemArr[i] == lastItemArr[arrayIndex]) {
               count = count + 1;
             }
           }
         }
 
         if (count == keys.length - 1) {
-          placeArr.push(placePlaceValues[i]);
+          foundItemArr.push(itemArr[i]);
         }
       }
 
-      this.placeLoad(placeArr.join(" "));
+      this.loadTextValues(foundItemArr.join(" "));
     },
     placeKEYS: function () {
-      let placePlaceValues = Object.keys(this.placeValue);
+      let itemArr = Object.keys(this.storedValue);
 
-      this.placeLoad(placePlaceValues.join(" "));
+      this.loadTextValues(itemArr.join(" "));
     },
     placeDELKey: function (key) {
-      delete this.placeValue[key];
+      delete this.storedValue[key];
 
-      if (undefined !== this.expiredValues[key]) {
-        delete this.expiredValues[key];
+      if (undefined !== this.expiredValue[key]) {
+        delete this.expiredValue[key];
       }
-      this.placeLoad("OK");
+      this.loadTextValues("OK");
     },
     placeEXPIREKey: function (key, seconds) {
       let currentDate = new Date();
       setTimeout(() => {
         this.placeDELKey(key);
       }, seconds * 1000);
-      this.expiredValues[key] = currentDate.getSeconds() + seconds;
-      this.placeLoad(seconds.toString());
+      this.expiredValue[key] = currentDate.getSeconds() + seconds;
+      this.loadTextValues(seconds.toString());
     },
     placeSAVEKey: function () {
-      let placePlaceValue = this.placeValue;
+      let storedValue = this.storedValue;
 
-      window.sessionStorage.setItem("place", JSON.stringify(placePlaceValue));
-      this.placeLoad("OK");
+      window.sessionStorage.setItem("place", JSON.stringify(storedValue));
+      this.loadTextValues("OK");
     },
     placeRESTOREKey: function () {
-      let placePlaceValue = {};
-      placePlaceValue = JSON.parse(window.sessionStorage.getItem("place"));
-      this.placeValue = placePlaceValue;
-      this.placeLoad("OK");
+      let storedValue = {};
+      storedValue = JSON.parse(window.sessionStorage.getItem("place"));
+      this.storedValue = storedValue;
+      this.loadTextValues("OK");
     },
     placeTTLKey: function (key) {
       let currentDate = new Date();
 
-      let placeSeconds = this.expiredValues[key] - currentDate.getSeconds();
-      this.placeLoad(placeSeconds + " " + "seconds");
+      let lastSeconds = this.expiredValue[key] - currentDate.getSeconds();
+      this.loadTextValues(lastSeconds + " " + "seconds");
     },
-    placeLoad: function (place) {
-      let places = {};
+    loadTextValues: function (text) {
+      let textValue = {};
 
-      places.last = place;
-      places.first = this.value;
-      places.count = this.placeValues.length + 1;
-      this.placeValues.push(places);
+      textValue.last = text;
+      textValue.first = this.customerInput;
+      textValue.count = this.textValues.length + 1;
+      this.textValues.push(textValue);
     },
   },
 };
