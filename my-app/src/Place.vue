@@ -28,11 +28,15 @@
           />
         </form>
       </div>
+
+      <PlaceExample />
     </div>
   </div>
 </template>
 
 <script>
+import PlaceExample from "./components/PlaceExample.vue";
+
 export default {
   name: "Place",
 
@@ -264,6 +268,9 @@ export default {
       textValue.count = this.textValues.length + 1;
       this.textValues.push(textValue);
     },
+  },
+  components: {
+    PlaceExample,
   },
 };
 </script>

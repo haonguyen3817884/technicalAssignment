@@ -32,6 +32,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ---
 
+Redis is a popular in-memory data structure store that is widely used in many applications, either as cache, complex data structure, or store application data itself.
+
 In this assignment, your task is to build a simple, stripped-down version of Redis named Ledis (for light-weight Redis). Your Ledis app can run entirely on a single web page, meaning you do not need a webserver/backend.
 
 You need to implement these functionalities:
@@ -43,6 +45,8 @@ You need to implement these functionalities:
 ## **Commands**
 
 ---
+
+Your Ledis should be able to handle the following. Note that these are modeled after Redis commands, so feel free to refer to Redis manual when you have questions.
 
 ### **String**
 
@@ -307,3 +311,9 @@ RESTORE
 ---
 
 When an error happens, simply return “ERROR”, together with the cause of the error if possible. Example: _“ERROR: Key not found”_
+
+## **Web CLI**
+
+Please build a simple web-based CLI interface that allows users to enter commands and displays the result (this is just an example, you could build a different UI):
+
+[https://lh4.googleusercontent.com/P5C_2U9fQ-fBdOUu_ZD8shvsS8I7Nq9KA0nnBY4dGRJrPm9mGhE6jSnV_HZy5r0lqHileH8MKmNhupVcbdQtOklFv5WC5c021qLTmX4CCa7Dzb2lhfG6lQOw-Wwves6qJAF8cRKW](https://lh4.googleusercontent.com/P5C_2U9fQ-fBdOUu_ZD8shvsS8I7Nq9KA0nnBY4dGRJrPm9mGhE6jSnV_HZy5r0lqHileH8MKmNhupVcbdQtOklFv5WC5c021qLTmX4CCa7Dzb2lhfG6lQOw-Wwves6qJAF8cRKW)
