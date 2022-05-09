@@ -1,6 +1,5 @@
 <template>
   <div style="margin: 17px 0px">
-    place
     <div>{{ textValue.first }}</div>
     <div v-bind:style="placeStyle">{{ textValue.last }}</div>
   </div>

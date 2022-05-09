@@ -1,6 +1,5 @@
 <template>
   <div>
-    place
     <form style="display: flex" v-on:submit="loadInputs">
       <input
         type="text"

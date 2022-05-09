@@ -2,12 +2,20 @@
   <div>
     <div style="color: #111111; padding: 17px 17px">
       <div
-        style="color: #111111; padding: 17px 17px; background-color: #348975"
+        style="
+          color: #111111;
+          padding: 17px 17px;
+          background-color: #348975;
+          height: 400px;
+          overflow: scroll;
+        "
+        ref="Place"
       >
         <PlaceTable
           v-for="textValue in textValues"
           :key="textValue.count"
           v-bind:textValue="textValue"
+          ref="Places"
         />
       </div>
 
@@ -266,6 +274,12 @@ export default {
     PlaceExample,
     PlaceTable,
     PlaceInput,
+  },
+  updated: function () {
+    if (0 !== this.textValues.length) {
+      let place = this.$refs.Places[this.textValues.length - 1];
+      place.$el.scrollIntoView();
+    }
   },
 };
 </script>
