@@ -2,28 +2,32 @@
   <div>
     <div style="color: #111111; padding: 17px 17px">
       <div
-        style="
-          color: #111111;
-          padding: 17px 17px;
-          background-color: #348975;
-          height: 400px;
-          overflow: scroll;
-        "
-        ref="Place"
+        style="color: #111111; padding: 17px 17px; background-color: #348975"
       >
-        <PlaceTable
+        <div
           v-for="textValue in textValues"
           :key="textValue.count"
-          v-bind:textValue="textValue"
-          ref="Places"
-        />
+          style="margin: 17px 0px"
+        >
+          <div>{{ textValue.first }}</div>
+          <div>{{ textValue.last }}</div>
+        </div>
       </div>
 
-      <PlaceInput
-        v-bind:placeCustomerInput="customerInput"
-        v-bind:placeSetCustomerInput="setCustomerInput"
-        v-bind:placeLoadInputs="loadInputs"
-      />
+      <div>
+        <form style="display: flex" v-on:submit="loadInputs">
+          <input
+            type="text"
+            style="
+              width: 100%;
+              padding: 17px 17px;
+              background-color: #111111;
+              color: #ffffff;
+            "
+            v-model="customerInput"
+          />
+        </form>
+      </div>
 
       <PlaceExample />
     </div>
@@ -32,10 +36,6 @@
 
 <script>
 import PlaceExample from "./components/PlaceExample.vue";
-
-import PlaceTable from "./components/PlaceTable.vue";
-
-import PlaceInput from "./components/PlaceInput.vue";
 
 export default {
   name: "Place",
@@ -49,31 +49,32 @@ export default {
     };
   },
   methods: {
-    loadInputs: function () {
+    loadInputs: function (e) {
+      e.preventDefault();
       var customerInputArr = this.customerInput.split(" ");
 
       switch (customerInputArr[0]) {
         case "SET":
           if (3 != customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             this.placeSetKey(customerInputArr[1], customerInputArr[2]);
           }
           break;
         case "GET":
           if (2 != customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             if ("string" == typeof this.storedValue[customerInputArr[1]]) {
               this.placeGetKey(customerInputArr[1]);
             } else {
-              this.loadTextValues("ERROR: Not a String", true);
+              this.loadTextValues("ERROR: Not a String");
             }
           }
           break;
         case "SADD":
           if (3 > customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             let itemArr = [];
             for (let i = 0; i < customerInputArr.length - 2; ++i) {
@@ -91,7 +92,7 @@ export default {
           break;
         case "SREM":
           if (3 > customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             let itemArr = [];
 
@@ -103,14 +104,14 @@ export default {
           break;
         case "SMEMBERS":
           if (2 != customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             this.placeSMEMBERSKey(customerInputArr[1]);
           }
           break;
         case "SINTER":
           if (3 > customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             let itemArr = [];
             for (let i = 0; i < customerInputArr.length - 1; ++i) {
@@ -124,14 +125,14 @@ export default {
           break;
         case "DEL":
           if (2 != customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             this.placeDELKey(customerInputArr[1]);
           }
           break;
         case "EXPIRE":
           if (3 != customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             this.placeEXPIREKey(
               customerInputArr[1],
@@ -147,7 +148,7 @@ export default {
           break;
         case "TTL":
           if (2 != customerInputArr.length) {
-            this.loadTextValues("ERROR", true);
+            this.loadTextValues("ERROR");
           } else {
             if (undefined === this.expiredValue[customerInputArr[1]]) {
               this.placeLoad("ERROR: Key is not expired");
@@ -157,21 +158,23 @@ export default {
           }
           break;
         default:
-          this.loadTextValues("ERROR", true);
+          this.loadTextValues("ERROR");
           break;
       }
+
+      this.customerInput = "";
     },
     placeSetKey: function (key, itemValue) {
       this.storedValue[key] = itemValue;
-      this.loadTextValues("OK", false);
+      this.loadTextValues("OK");
     },
     placeGetKey: function (key) {
       let item = this.storedValue[key];
-      this.loadTextValues(item, false);
+      this.loadTextValues(item);
     },
     placeSADDKey: function (key, itemValues) {
       this.storedValue[key] = itemValues;
-      this.loadTextValues("OK", false);
+      this.loadTextValues("OK");
     },
     placeSREMKey: function (key, itemValues) {
       let itemArr = [];
@@ -186,11 +189,11 @@ export default {
       }
 
       this.storedValue[key] = itemArr;
-      this.loadTextValues(leftItems + " " + "is/are not removed", false);
+      this.loadTextValues(leftItems + " " + "is/are not removed");
     },
     placeSMEMBERSKey: function (key) {
       let itemArr = this.storedValue[key];
-      this.loadTextValues(itemArr.join(" "), false);
+      this.loadTextValues(itemArr.join(" "));
     },
     placeSINTERKey: function (keys) {
       let itemArr = this.storedValue[keys[0]];
@@ -216,12 +219,12 @@ export default {
         }
       }
 
-      this.loadTextValues(foundItemArr.join(" "), false);
+      this.loadTextValues(foundItemArr.join(" "));
     },
     placeKEYS: function () {
       let itemArr = Object.keys(this.storedValue);
 
-      this.loadTextValues(itemArr.join(" "), false);
+      this.loadTextValues(itemArr.join(" "));
     },
     placeDELKey: function (key) {
       delete this.storedValue[key];
@@ -229,7 +232,7 @@ export default {
       if (undefined !== this.expiredValue[key]) {
         delete this.expiredValue[key];
       }
-      this.loadTextValues("OK", false);
+      this.loadTextValues("OK");
     },
     placeEXPIREKey: function (key, seconds) {
       let currentDate = new Date();
@@ -237,49 +240,37 @@ export default {
         this.placeDELKey(key);
       }, seconds * 1000);
       this.expiredValue[key] = currentDate.getSeconds() + seconds;
-      this.loadTextValues(seconds.toString(), false);
+      this.loadTextValues(seconds.toString());
     },
     placeSAVEKey: function () {
       let storedValue = this.storedValue;
 
       window.sessionStorage.setItem("place", JSON.stringify(storedValue));
-      this.loadTextValues("OK", false);
+      this.loadTextValues("OK");
     },
     placeRESTOREKey: function () {
       let storedValue = {};
       storedValue = JSON.parse(window.sessionStorage.getItem("place"));
       this.storedValue = storedValue;
-      this.loadTextValues("OK", false);
+      this.loadTextValues("OK");
     },
     placeTTLKey: function (key) {
       let currentDate = new Date();
 
       let lastSeconds = this.expiredValue[key] - currentDate.getSeconds();
-      this.loadTextValues(lastSeconds + " " + "seconds", false);
+      this.loadTextValues(lastSeconds + " " + "seconds");
     },
-    loadTextValues: function (text, isPlace) {
+    loadTextValues: function (text) {
       let textValue = {};
 
       textValue.last = text;
       textValue.first = this.customerInput;
       textValue.count = this.textValues.length + 1;
-      textValue.isPlace = isPlace;
       this.textValues.push(textValue);
-    },
-    setCustomerInput: function (places) {
-      this.customerInput = places;
     },
   },
   components: {
     PlaceExample,
-    PlaceTable,
-    PlaceInput,
-  },
-  updated: function () {
-    if (0 !== this.textValues.length) {
-      let place = this.$refs.Places[this.textValues.length - 1];
-      place.$el.scrollIntoView();
-    }
   },
 };
 </script>
