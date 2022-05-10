@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin: 17px 0px">
     {{ count }}
     <button v-on:click="count = count + 1">count</button>
   </div>

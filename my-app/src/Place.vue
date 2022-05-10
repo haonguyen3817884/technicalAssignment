@@ -7,7 +7,7 @@
           padding: 17px 17px;
           background-color: #348975;
           height: 400px;
-          overflow: scroll;
+          overflow-y: scroll;
         "
         ref="Place"
       >
